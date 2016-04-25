@@ -1,0 +1,388 @@
+// SortingCode.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stack>
+#include <iterator>
+#include <vector>
+
+
+using namespace std;
+
+/*
+Bubble sorts through the whole list,
+by comparing adjacent terms repeatedly.
+*/
+
+void bubbleSort(int numbs[], int max, int counter[], int exCount, int compCount)
+{
+	int temp;
+	//for loop to check all possible combinations
+	for (int i = 0; i <= max; i++)
+	{
+		for (int j = 0; j<max-1; j++)
+		{
+			//Swapping elements in if statement
+			compCount++;
+			counter[2] = compCount;
+			if (numbs[j]>numbs[j + 1])
+			{
+				temp = numbs[j];
+				numbs[j] = numbs[j + 1];
+				numbs[j + 1] = temp;
+				exCount++;
+				counter[1] = exCount;
+			}
+		}
+	}
+	cout << "number exchanges " << exCount
+		<< " and number comparisons " << compCount;
+	system("pause");
+	for (int x = 0; x < max; x++)
+	{
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+}
+
+
+/*
+Shell sort compares numbers in increments,
+moving the smaller number towards the left
+and moving the larger towards the right.
+*/
+
+void shellSort(int numbs[], int max, int counter[], int exCount, int compCount)
+{
+	int gap, i, j, temp;
+	for (gap = max / 2; gap > 0; gap /= 2)
+	{
+		for (i = gap; i < max; i++)
+		{
+			for (j = i - gap; j >= 0 && numbs[j] > numbs[j + gap]; j -= gap)
+			{
+				temp = numbs[j];
+				numbs[j] = numbs[j + gap];
+				numbs[j + gap] = temp;
+				exCount++;
+				counter[1] = exCount;
+				compCount++;
+				counter[2] = compCount;
+			}
+			compCount++;
+			counter[2] = compCount;
+		}
+	}
+	cout << "Numbers of comparizon " << compCount <<
+		" and number of exchanges " << exCount;
+	system("pause");
+	for (int x = 0; x < max; x++)
+	{
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+}
+
+/*
+Insertion sort compares two numbers int the
+array and checks which is smaller, the smaller
+one is placed in the left most location, the 
+larger the right most.
+*/
+
+void insertionSort(int numbs[], int max, int counter[], int exCount, int compCount)
+{
+	int j, temp;
+	for (int i = 0; i < max; i++) {
+		j = i;
+		while (j > 0 && numbs[j] < numbs[j - 1]) {
+			temp = numbs[j];
+			numbs[j] = numbs[j - 1];
+			numbs[j - 1] = temp;
+			j--;
+			exCount++;
+			counter[1] = exCount;
+			compCount++;
+			counter[2] = compCount;
+		}
+		compCount++;
+		counter[2] = compCount;
+	}
+	cout << "Number of exchanges " << exCount <<
+		" and number of comparisons " << compCount;
+	system("pause");
+	for (int x = 0; x < max; x++)
+	{
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+}
+
+/*
+Merge sort uses two methods, one method is in order
+to merge the different data of the array, the other
+is to sort out the merged array into one array.
+*/
+
+void merge(int numbs[], int low, int mid, int high, int counter[], int exCount, int compCount)
+{
+	int i, j, k, C[10000];
+	i = low;
+	j = mid + 1;
+	k = 0;
+	while ((i <= mid) && (j <= high))
+	{
+		compCount+=2;
+		counter[2] = compCount;
+		if (numbs[i] < numbs[j])
+		{
+			C[k] = numbs[i++];
+			compCount++;
+			counter[2] = compCount;
+			exCount++;
+			counter[1] = exCount;
+		}
+		else
+		{
+			C[k] = numbs[j++];
+			compCount++;
+			counter[2] = compCount;
+			exCount++;
+			counter[1] = exCount;
+		}
+		k++;
+		compCount++;
+		counter[2] = compCount;
+	}
+	while (i <= mid)
+	{
+		C[k++] = numbs[i++];
+		compCount++;
+		counter[2] = compCount;
+		exCount++;
+		counter[1] = exCount;
+	}
+	while (j <= high)
+	{
+		C[k++] = numbs[j++];
+		compCount++;
+		counter[2] = compCount;
+		exCount++;
+		counter[1] = exCount;
+	}
+	if (!(i <= mid) || !(j <= high))
+	{
+		compCount += 2;
+		counter[2] = compCount;
+	}
+	for (i = low, j = 0; i <= high; i++, j++)
+	{
+		numbs[i] = C[j];
+		exCount++;
+		counter[1] = exCount;
+		compCount++;
+		counter[2] = compCount;
+	}
+}
+
+void mergeSort(int numbs[], int low, int high, int counter[], int exCount, int compCount)
+{
+	int mid;
+	if (low < high)
+	{
+		mid = (low + high) / 2;
+		compCount++;
+		counter[2] = compCount;
+		mergeSort(numbs, low, mid, counter, exCount, compCount);
+		mergeSort(numbs, mid + 1, high, counter, exCount, compCount);
+		merge(numbs, low, high, mid, counter, exCount, compCount);
+	}
+}
+
+/*
+Quick sort, three seperate methods in order to
+make the method much more meaningful and condensed.
+One method is the swap in order to swap numbers,
+and make sure the smaller one is towards the left,
+another is pivot, in order to find where the code
+should compare the numbers from, and the last is
+quick sort which calls all of them to sort through 
+the data.
+*/
+
+
+void swap(int& a, int& b)
+{
+	int temp = a;
+	a = b;
+	b = temp;
+}
+
+int pivotCode(int numbs[], int first, int last, int counter[], int exCount, int compCount)
+{
+	int  pivot = last/2;
+	int pivotElement = numbs[first];
+	int temp = 0;
+
+	for (int i = first + 1; i <= last; i++)
+	{
+		if (numbs[i] <= pivotElement)
+		{
+			pivot++;
+			temp = numbs[i];
+			numbs[i] = numbs[pivot];
+			numbs[pivot] = temp;
+			exCount++;
+			counter[1] = exCount;
+			compCount ++;
+			counter[2] = compCount;
+		}
+	}
+	temp = numbs[pivot];
+	numbs[pivot]=numbs[first];
+	numbs[first] = temp;
+	exCount++;
+	counter[1] = exCount;
+	compCount++;
+	counter[2] = compCount;
+	return pivot;
+}
+
+void quickSort(int numbs[], int first,  int max, int counter[], int exCount, int compCount)
+{
+	int pivot;
+	if (first < max)
+	{
+		compCount++;
+		counter[2] = compCount;
+		pivot = pivotCode(numbs, first, max, counter, exCount, compCount);
+		quickSort(numbs, first, pivot - 1, counter, exCount, compCount);
+		quickSort(numbs, pivot + 1, max, counter, exCount, compCount);
+	}
+}
+
+/*
+Reads things from a file and puts them
+into an array for later use or at least
+it was until I evolved it to be one method
+that sorts everything differently.
+*/
+void arrayMaker(string file)
+{
+	vector<int> vecArray;
+	string InFile;
+	int numbs[10000], numbsTemp[1000], size;
+	int exCount, compCount;
+	exCount = compCount = 0;
+	int counter[2] = { exCount,compCount };
+	ifstream stream(file);
+	copy(istream_iterator<int>(stream),
+		istream_iterator<int>(),
+		back_inserter(vecArray));
+	system("pause");
+	size = vecArray.size();
+
+	for (int x = 0; x < vecArray.size(); x++)
+	{
+		cout << vecArray[x] << "\n";
+		numbs[x] = numbsTemp[x] = vecArray[x];
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+	cout << "In bubble sort" << "\n";
+	bubbleSort(numbs, size, counter, exCount, compCount);
+	cout << "The number of exchanges are " << counter[1] <<
+		" and the number of comparisons are " << counter[2] <<
+		"\n";
+	counter[1] = counter[2] = 0;
+	system("pause");
+
+	for (int x = 0; x < vecArray.size(); x++)
+	{
+		numbs[x] = numbsTemp[x];
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+	cout << "In shell sort" << "\n";
+	shellSort(numbs, size, counter, exCount, compCount);
+	cout << "The number of exchanges are " << counter[1] <<
+		" and the number of comparisons are " << counter[2] <<
+		"\n";
+	counter[1] = counter[2] = 0;
+	system("pause");
+
+	for (int x = 0; x < vecArray.size(); x++)
+	{
+		numbs[x] = numbsTemp[x];
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+	cout << "In insertion sort" << "\n";
+	insertionSort(numbs, size, counter, exCount, compCount);
+	cout << "The number of exchanges are " << counter[1] <<
+		" and the number of comparisons are " << counter[2] <<
+		"\n";
+	counter[1] = counter[2] = 0;
+	system("pause");
+
+	for (int x = 0; x < vecArray.size(); x++)
+	{
+		numbs[x] = numbsTemp[x];
+		cout << numbs[x] << "\n";
+	}
+	system("pause"); 
+	cout << "In merge sort" << "\n";
+	mergeSort(numbs, 0, size, counter, exCount,compCount);
+	cout << "The number of exchanges are " << counter[1] <<
+	" and the number of comparisons are " << counter[2] <<
+	"\n";
+	counter[1] = counter[2] = 0;
+	system("pause");
+
+	for (int x = 0; x < vecArray.size(); x++)
+	{
+		numbs[x] = numbsTemp[x];
+		cout << numbs[x] << "\n";
+	}
+	cout << "In merge Sort" << "\n";
+	mergeSort(numbs, 0, size, counter, exCount, compCount);
+	cout << "The number of exchanges are " << counter[1] <<
+		" and the number of comparisons are " << counter[2] <<
+		"\n";
+	system("pause");
+
+	for (int x = 0; x < vecArray.size(); x++)
+	{
+		numbs[x] = numbsTemp[x];
+		cout << numbs[x] << "\n";
+	}
+	system("pause");
+	quickSort(numbs, 0, size, counter, exCount, compCount);
+	cout << "The number of exchanges are " << counter[1] <<
+		" and the number of comparisons are " << counter[2] <<
+		"\n";
+	counter[1] = counter[2] = 0;
+	system("pause");
+	for (int x = 0; x < vecArray.size(); x++)
+		cout << numbs[x] << "\n";
+	system("pause");
+}
+
+void main()
+{
+	/*
+	attempted cin but had issues, just 
+	plug in the text files into the 
+	methods and run them. Also, run them 
+	one at a time because they crash after
+	each run through
+	*/
+
+	//arrayMaker("C:\\Users\\ES Shiro\\Desktop\\Random.txt");
+	//arrayMaker("C:\\Users\\ES Shiro\\Desktop\\Reversed.txt");
+	//arrayMaker("C:\\Users\\ES Shiro\\Desktop\\NearlySorted.txt");
+	//arrayMaker("C:\\Users\\ES Shiro\\Desktop\\FewUnique.txt");
+}
